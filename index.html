@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CatHaxor — Abdulla Rahaman</title>
+
+  <meta name="description" content="CatHaxor (Abdulla Rahaman) — hacker-style portfolio. Automation, bots, bug hunting, and clean web engineering." />
+  <meta property="og:title" content="CatHaxor — Abdulla Rahaman" />
+  <meta property="og:description" content="Automation • Bots • Bug Hunting • Ethical Web Security" />
+  <meta property="og:type" content="website" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['ui-monospace','SFMono-Regular','Menlo','Monaco','Consolas','Liberation Mono','Courier New','monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html{scroll-behavior:smooth}
+
+    #matrix{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:-20;
+      opacity:.24;
+      pointer-events:none;
+      filter: blur(.2px) saturate(.9);
+    }
+
+    .bg-overlay{
+      position:fixed;
+      inset:0;
+      z-index:-10;
+      pointer-events:none;
+      background:
+        radial-gradient(900px 900px at 50% -10%, rgba(16,185,129,.22), transparent 60%),
+        linear-gradient(to bottom, rgba(2,6,23,.45), rgba(2,6,23,.88), rgba(2,6,23,.96));
+    }
+
+    .scanlines::before{
+      content:"";
+      position:absolute; inset:0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.03),
+        rgba(255,255,255,0.03) 1px,
+        rgba(0,0,0,0) 3px,
+        rgba(0,0,0,0) 6px
+      );
+      mix-blend-mode: overlay;
+      pointer-events:none;
+      opacity:.20;
+    }
+
+    .noise::after{
+      content:"";
+      position:absolute; inset:-40px;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      opacity:.08;
+      pointer-events:none;
+    }
+
+    .caret{
+      display:inline-block;
+      width:10px; height:18px;
+      background: rgba(34,197,94,.95);
+      margin-left:6px;
+      animation: blink 1s steps(2, start) infinite;
+      vertical-align:-3px;
+    }
+    @keyframes blink { to { visibility: hidden; } }
+
+    .glitch {
+      position: relative;
+      display: inline-block;
+      text-shadow: 0 0 18px rgba(34,197,94,.20);
+    }
+    .glitch::before,
+    .glitch::after{
+      content: attr(data-text);
+      position:absolute;
+      left:0; top:0;
+      opacity:.35;
+      pointer-events:none;
+    }
+    .glitch::before{
+      transform: translate(1px, 0);
+      color: rgba(34,197,94,.75);
+      clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+    }
+    .glitch::after{
+      transform: translate(-1px, 0);
+      color: rgba(96,165,250,.65);
+      clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+    }
+
+    .neon {
+      box-shadow: 0 0 0 1px rgba(16,185,129,.14), 0 18px 70px rgba(0,0,0,.45);
+    }
+
+    .reveal{
+      opacity:0;
+      transform: translateY(14px);
+      transition: opacity .7s ease, transform .7s ease;
+      will-change: opacity, transform;
+    }
+    .reveal.show{
+      opacity:1;
+      transform: translateY(0);
+    }
+
+    .navlink.active{
+      color: rgba(167,243,208,1) !important;
+      text-shadow: 0 0 18px rgba(34,197,94,.25);
+    }
+
+    /* Mobile drawer */
+    .drawer{
+      transform: translateX(100%);
+      transition: transform .25s ease;
+    }
+    .drawer.open{
+      transform: translateX(0);
+    }
+  </style>
+</head>
+
+<body class="font-mono bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden">
+  <canvas id="matrix" aria-hidden="true"></canvas>
+  <div class="bg-overlay" aria-hidden="true"></div>
+
+  <header class="sticky top-0 z-30 border-b border-emerald-400/15 backdrop-blur bg-slate-950/55">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      <a href="#" class="flex items-center gap-3 min-w-0">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <span class="text-sm text-emerald-200/90 truncate">cat@cathaxor:~</span>
+      </a>
+
+      <nav class="hidden sm:flex gap-6 text-sm text-slate-200/80">
+        <a class="navlink hover:text-emerald-300" href="#projects">Projects</a>
+        <a class="navlink hover:text-emerald-300" href="#network">Network</a>
+        <a class="navlink hover:text-emerald-300" href="#skills">Skills</a>
+        <a class="navlink hover:text-emerald-300" href="#contact">Contact</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="#contact" class="hidden sm:inline text-xs sm:text-sm px-3 py-1.5 rounded-lg border border-emerald-400/30 hover:border-emerald-400/70 hover:text-emerald-200 transition">
+          Reach Out
+        </a>
+
+        <!-- Mobile hamburger -->
+        <button id="menuBtn" class="sm:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-emerald-400/25 hover:border-emerald-400/60 transition"
+          aria-label="Open menu" aria-expanded="false">
+          <svg id="iconOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-5 h-5">
+            <path d="M4 6h16M4 12h16M4 18h16" stroke="rgba(167,243,208,0.95)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <svg id="iconClose" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-5 h-5 hidden">
+            <path d="M6 6l12 12M18 6L6 18" stroke="rgba(167,243,208,0.95)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile drawer + backdrop -->
+  <div id="backdrop" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+  <aside id="drawer" class="drawer fixed right-0 top-0 h-full w-[82%] max-w-xs z-50 bg-slate-950/95 border-l border-emerald-400/15 backdrop-blur p-5">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-sm text-emerald-200/90">menu</span>
+      </div>
+      <button id="closeDrawer" class="w-10 h-10 rounded-lg border border-emerald-400/20 hover:border-emerald-400/60 transition" aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-5 h-5 mx-auto">
+          <path d="M6 6l12 12M18 6L6 18" stroke="rgba(167,243,208,0.95)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="mt-6 space-y-2 text-sm text-slate-200/85">
+      <a class="moblink block px-4 py-3 rounded-xl border border-emerald-400/10 bg-slate-950/40 hover:border-emerald-400/45 transition" href="#projects">Projects</a>
+      <a class="moblink block px-4 py-3 rounded-xl border border-emerald-400/10 bg-slate-950/40 hover:border-emerald-400/45 transition" href="#network">Network</a>
+      <a class="moblink block px-4 py-3 rounded-xl border border-emerald-400/10 bg-slate-950/40 hover:border-emerald-400/45 transition" href="#skills">Skills</a>
+      <a class="moblink block px-4 py-3 rounded-xl border border-emerald-400/10 bg-slate-950/40 hover:border-emerald-400/45 transition" href="#contact">Contact</a>
+    </nav>
+
+    <div class="mt-6">
+      <a href="#contact" class="moblink inline-flex w-full items-center justify-center px-4 py-3 rounded-xl bg-emerald-500/15 border border-emerald-400/30 hover:border-emerald-400/70 hover:bg-emerald-500/20 transition">
+        Reach Out
+      </a>
+    </div>
+
+    <div class="mt-6 text-xs text-slate-200/55 leading-relaxed">
+      Ethical testing only — authorized scope and responsible disclosure.
+    </div>
+  </aside>
+
+  <main class="max-w-6xl mx-auto px-4 py-10 relative">
+    <div class="absolute inset-0 -z-10 scanlines noise"></div>
+
+    <section class="grid lg:grid-cols-12 gap-6 items-start">
+      <div class="lg:col-span-7 space-y-6">
+        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 sm:p-7 neon reveal">
+          <p class="text-emerald-300/90 text-sm">ACCESS GRANTED ✅</p>
+
+          <h1 class="mt-3 text-3xl sm:text-4xl font-bold tracking-tight">
+            <span class="glitch" data-text="CatHaxor">CatHaxor</span>
+            <span class="caret"></span>
+          </h1>
+
+          <p class="mt-2 text-sm text-slate-200/70">
+            Legal name: <span class="text-emerald-200 font-semibold">Abdulla Rahaman</span>
+          </p>
+
+          <p class="mt-4 text-slate-200/80 leading-relaxed">
+            I build automation systems, bots, and pragmatic web tools — engineered for stability, speed, and clean deployment.
+            I also do <span class="text-emerald-200 font-semibold">bug hunting</span> and <span class="text-emerald-200 font-semibold">ethical web penetration testing</span>
+            with permission and responsible disclosure.
+          </p>
+
+          <div class="mt-5 text-sm">
+            <span class="text-slate-200/70">Role:</span>
+            <span class="text-emerald-200 font-semibold" id="typed"></span>
+          </div>
+
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Node.js</span>
+            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Python</span>
+            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Automation</span>
+            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Bug Hunting</span>
+            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Web Pentesting</span>
+            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Deploy</span>
+          </div>
+
+          <div class="mt-7 flex flex-wrap gap-3">
+            <a href="#projects" class="px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-400/30 hover:border-emerald-400/70 hover:bg-emerald-500/20 transition">
+              View Projects
+            </a>
+            <a href="#network" class="px-4 py-2 rounded-xl border border-slate-400/20 hover:border-emerald-400/60 hover:text-emerald-200 transition">
+              My Network
+            </a>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden neon reveal">
+          <div class="px-4 py-2 border-b border-emerald-400/10 flex items-center gap-2 text-xs text-slate-200/70">
+            <span class="w-2 h-2 rounded-full bg-red-500/70"></span>
+            <span class="w-2 h-2 rounded-full bg-yellow-500/70"></span>
+            <span class="w-2 h-2 rounded-full bg-green-500/70"></span>
+            <span class="ml-2">terminal</span>
+          </div>
+          <div class="p-4 text-sm leading-relaxed">
+            <p class="text-slate-200/80"><span class="text-emerald-300">cat@cathaxor</span>:<span class="text-emerald-200">~</span>$ whoami</p>
+            <p class="text-slate-200/80 mt-1">CatHaxor — Abdulla Rahaman</p>
+
+            <p class="text-slate-200/80 mt-3"><span class="text-emerald-300">cat@cathaxor</span>:<span class="text-emerald-200">~</span>$ focus</p>
+            <p class="text-slate-200/80 mt-1">automation • bots • bug hunting • ethical web security</p>
+
+            <p class="text-slate-200/80 mt-3"><span class="text-emerald-300">cat@cathaxor</span>:<span class="text-emerald-200">~</span>$ status</p>
+            <p class="text-emerald-200 mt-1">online ✅</p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="lg:col-span-5 space-y-6">
+        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
+          <div class="flex items-center gap-4">
+            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border border-emerald-400/25 bg-emerald-500/10 shrink-0">
+  <img
+    src="assets/me.png"
+    alt="Abdulla Rahaman"
+    class="w-full h-full object-cover"
+    style="
+      image-rendering: auto;
+      transform: translateZ(0);
+      filter: contrast(1.08) saturate(1.08) brightness(1.03) sharpen(0);
+    "
+  />
+</div>
+
+            <div class="min-w-0">
+              <p class="text-emerald-200 font-semibold truncate">CatHaxor</p>
+              <p class="text-xs text-slate-200/70 truncate">Abdulla Rahaman • Bangladesh • GMT+6</p>
+            </div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-2 gap-3 text-sm">
+            <div class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40">
+              <p class="text-slate-200/60 text-xs">Availability</p>
+              <p class="mt-1 text-emerald-200">Open to work</p>
+            </div>
+            <div class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40">
+              <p class="text-slate-200/60 text-xs">Specialty</p>
+              <p class="mt-1 text-emerald-200">Security + Automation</p>
+            </div>
+          </div>
+
+          <div class="mt-5 flex flex-wrap gap-2">
+            <a class="text-xs px-3 py-1.5 rounded-lg border border-emerald-400/20 hover:border-emerald-400/70 hover:text-emerald-200 transition"
+              href="https://github.com/cathaxor" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="text-xs px-3 py-1.5 rounded-lg border border-emerald-400/20 hover:border-emerald-400/70 hover:text-emerald-200 transition"
+              href="https://www.youtube.com/@AbdullaTech49" target="_blank" rel="noreferrer">YouTube</a>
+            <a class="text-xs px-3 py-1.5 rounded-lg border border-emerald-400/20 hover:border-emerald-400/70 hover:text-emerald-200 transition"
+              href="https://www.facebook.com/profile.php?id=61584068717312" target="_blank" rel="noreferrer">Facebook</a>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
+          <h2 class="text-sm text-emerald-200/90">Quick Links</h2>
+          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <a class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40 hover:border-emerald-400/40 transition"
+               href="https://cathaxor.xyz/" target="_blank" rel="noreferrer">
+              <p class="text-emerald-200 font-semibold">cathaxor.xyz</p>
+              <p class="text-xs text-slate-200/60 mt-1">Main website</p>
+            </a>
+            <a class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40 hover:border-emerald-400/40 transition"
+               href="https://cathaxor.site/" target="_blank" rel="noreferrer">
+              <p class="text-emerald-200 font-semibold">cathaxor.site</p>
+              <p class="text-xs text-slate-200/60 mt-1">Secondary domain</p>
+            </a>
+            <a class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40 hover:border-emerald-400/40 transition"
+               href="https://blog.cathaxor.xyz/" target="_blank" rel="noreferrer">
+              <p class="text-emerald-200 font-semibold">blog.cathaxor.xyz</p>
+              <p class="text-xs text-slate-200/60 mt-1">Blog</p>
+            </a>
+            <a class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40 hover:border-emerald-400/40 transition"
+               href="https://download.cathaxor.xyz/" target="_blank" rel="noreferrer">
+              <p class="text-emerald-200 font-semibold">download.cathaxor.xyz</p>
+              <p class="text-xs text-slate-200/60 mt-1">Downloader tool</p>
+            </a>
+            <a class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40 hover:border-emerald-400/40 transition sm:col-span-2"
+               href="https://prplexitycat.vercel.app/" target="_blank" rel="noreferrer">
+              <p class="text-emerald-200 font-semibold">prplexitycat.vercel.app</p>
+              <p class="text-xs text-slate-200/60 mt-1">AI UI</p>
+            </a>
+          </div>
+
+          <div class="mt-4 rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40">
+            <p class="text-xs text-slate-200/60">API Endpoint</p>
+            <p class="text-emerald-200 text-sm mt-1 break-all">https://perplexitycat.up.railway.app/</p>
+          </div>
+
+          <p class="mt-4 text-xs text-slate-200/55">
+            Ethical testing only — authorized scope and responsible disclosure.
+          </p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="projects" class="mt-12">
+      <div class="flex items-end justify-between gap-4 reveal">
+        <h2 class="text-xl sm:text-2xl font-bold text-emerald-200">Projects</h2>
+        <p class="text-xs text-slate-200/60">Selected work + demos</p>
+      </div>
+
+      <div class="mt-5 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <article class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal">
+          <div class="flex items-center justify-between gap-2">
+            <p class="text-emerald-200 font-semibold">Param Finder</p>
+            <span class="text-[11px] px-2 py-1 rounded-lg border border-emerald-400/20 text-emerald-200/80">GitHub</span>
+          </div>
+          <p class="mt-2 text-sm text-slate-200/75">
+            URL parameter utility for faster workflow and analysis.
+          </p>
+          <div class="mt-4 flex gap-3 text-sm">
+            <a class="text-emerald-300 hover:text-emerald-200" href="https://github.com/cathaxor/param-finder.git" target="_blank" rel="noreferrer">View Repo</a>
+          </div>
+        </article>
+
+        <article class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal">
+          <div class="flex items-center justify-between gap-2">
+            <p class="text-emerald-200 font-semibold">CYBER-CAT Bot Ecosystem</p>
+            <span class="text-[11px] px-2 py-1 rounded-lg border border-emerald-400/20 text-emerald-200/80">Node.js</span>
+          </div>
+          <p class="mt-2 text-sm text-slate-200/75">
+            Modular command system with stable logging, configuration layers, and deployment-ready structure.
+          </p>
+          <div class="mt-4 flex gap-3 text-sm">
+            <a class="text-emerald-300 hover:text-emerald-200" href="https://github.com/cathaxor" target="_blank" rel="noreferrer">GitHub Profile</a>
+          </div>
+        </article>
+
+        <article class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal">
+          <div class="flex items-center justify-between gap-2">
+            <p class="text-emerald-200 font-semibold">Automation + Downloader Tools</p>
+            <span class="text-[11px] px-2 py-1 rounded-lg border border-emerald-400/20 text-emerald-200/80">Web</span>
+          </div>
+          <p class="mt-2 text-sm text-slate-200/75">
+            Practical utilities and hosted tools for productivity and automation workflows.
+          </p>
+          <div class="mt-4 flex gap-3 text-sm">
+            <a class="text-emerald-300 hover:text-emerald-200" href="https://download.cathaxor.xyz/" target="_blank" rel="noreferrer">Open Tool</a>
+          </div>
+        </article>
+      </div>
+
+      <div class="mt-6 grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
+           href="https://youtu.be/D5pZTEKdHbI?si=1UphklAXoVPP-gtx" target="_blank" rel="noreferrer">
+          <img class="w-full h-40 object-cover" src="https://img.youtube.com/vi/D5pZTEKdHbI/hqdefault.jpg" alt="YouTube demo thumbnail">
+          <div class="p-4">
+            <p class="text-emerald-200 font-semibold text-sm">Demo Project #1</p>
+            <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
+          </div>
+        </a>
+
+        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
+           href="https://youtu.be/yvjKhKT5XRs?si=HxjK0UY_jsulB2lr" target="_blank" rel="noreferrer">
+          <img class="w-full h-40 object-cover" src="https://img.youtube.com/vi/yvjKhKT5XRs/hqdefault.jpg" alt="YouTube demo thumbnail">
+          <div class="p-4">
+            <p class="text-emerald-200 font-semibold text-sm">Demo Project #2</p>
+            <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
+          </div>
+        </a>
+
+        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
+           href="https://youtu.be/SK0QTHpKCa0?si=ZDqTbItXAfwMT520" target="_blank" rel="noreferrer">
+          <img class="w-full h-40 object-cover" src="https://img.youtube.com/vi/SK0QTHpKCa0/hqdefault.jpg" alt="YouTube demo thumbnail">
+          <div class="p-4">
+            <p class="text-emerald-200 font-semibold text-sm">Demo Project #3</p>
+            <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
+          </div>
+        </a>
+
+        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
+           href="https://youtu.be/aXOw2snq3z8?si=CmuGocDAKKw0dEvM" target="_blank" rel="noreferrer">
+          <img class="w-full h-40 object-cover" src="https://img.youtube.com/vi/aXOw2snq3z8/hqdefault.jpg" alt="YouTube demo thumbnail">
+          <div class="p-4">
+            <p class="text-emerald-200 font-semibold text-sm">Demo Project #4</p>
+            <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section id="network" class="mt-12">
+      <div class="flex items-end justify-between gap-4 reveal">
+        <h2 class="text-xl sm:text-2xl font-bold text-emerald-200">Network</h2>
+        <p class="text-xs text-slate-200/60">Websites & API</p>
+      </div>
+
+      <div class="mt-5 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal"
+           href="https://cathaxor.xyz/" target="_blank" rel="noreferrer">
+          <p class="text-emerald-200 font-semibold">cathaxor.xyz</p>
+          <p class="mt-2 text-sm text-slate-200/70">Main website • identity hub</p>
+        </a>
+
+        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal"
+           href="https://blog.cathaxor.xyz/" target="_blank" rel="noreferrer">
+          <p class="text-emerald-200 font-semibold">blog.cathaxor.xyz</p>
+          <p class="mt-2 text-sm text-slate-200/70">Blog • notes • writeups</p>
+        </a>
+
+        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal"
+           href="https://download.cathaxor.xyz/" target="_blank" rel="noreferrer">
+          <p class="text-emerald-200 font-semibold">download.cathaxor.xyz</p>
+          <p class="mt-2 text-sm text-slate-200/70">Downloader tool</p>
+        </a>
+
+        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal"
+           href="https://cathaxor.site/" target="_blank" rel="noreferrer">
+          <p class="text-emerald-200 font-semibold">cathaxor.site</p>
+          <p class="mt-2 text-sm text-slate-200/70">Secondary domain</p>
+        </a>
+
+        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal md:col-span-2 xl:col-span-2"
+           href="https://prplexitycat.vercel.app/" target="_blank" rel="noreferrer">
+          <p class="text-emerald-200 font-semibold">prplexitycat.vercel.app</p>
+          <p class="mt-2 text-sm text-slate-200/70">AI UI</p>
+        </a>
+
+        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal xl:col-span-3"
+           href="https://perplexitycat.up.railway.app/" target="_blank" rel="noreferrer">
+          <p class="text-emerald-200 font-semibold">perplexitycat.up.railway.app</p>
+          <p class="mt-2 text-sm text-slate-200/70 break-all">API endpoint</p>
+        </a>
+      </div>
+    </section>
+
+    <section id="skills" class="mt-12">
+      <h2 class="text-xl sm:text-2xl font-bold text-emerald-200 reveal">Skills</h2>
+
+      <div class="mt-5 grid md:grid-cols-2 gap-4">
+        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
+          <p class="text-emerald-200 font-semibold">Engineering</p>
+          <ul class="mt-3 space-y-2 text-sm text-slate-200/75">
+            <li>• Node.js, Express, RESTful APIs</li>
+            <li>• Python automation & scripting</li>
+            <li>• Linux operations, Nginx, Cloudflare</li>
+            <li>• cPanel and VPS deployment workflows</li>
+          </ul>
+        </div>
+
+        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
+          <p class="text-emerald-200 font-semibold">Security (ethical)</p>
+          <ul class="mt-3 space-y-2 text-sm text-slate-200/75">
+            <li>• Bug hunting (responsible disclosure)</li>
+            <li>• Web penetration testing (authorized scope)</li>
+            <li>• Secrets hygiene (.env, token safety)</li>
+            <li>• Monitoring, logging, stability-first decisions</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="mt-3 text-xs text-slate-200/55 reveal">
+        Ethical testing only — systems I own or have explicit permission to assess.
+      </p>
+    </section>
+
+    <section id="contact" class="mt-12">
+      <h2 class="text-xl sm:text-2xl font-bold text-emerald-200 reveal">Contact</h2>
+
+      <div class="mt-5 grid lg:grid-cols-12 gap-4">
+        <div class="lg:col-span-7 rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
+          <p class="text-sm text-slate-200/80">
+            Fastest way to reach me is through my channels below.
+          </p>
+
+          <div class="mt-5 grid sm:grid-cols-2 gap-3">
+            <a class="rounded-xl border border-emerald-400/15 p-4 bg-slate-950/40 hover:border-emerald-400/45 transition"
+               href="https://www.youtube.com/@AbdullaTech49" target="_blank" rel="noreferrer">
+              <p class="text-emerald-200 font-semibold">YouTube</p>
+              <p class="text-xs text-slate-200/70 mt-1">@AbdullaTech49</p>
+            </a>
+
+            <a class="rounded-xl border border-emerald-400/15 p-4 bg-slate-950/40 hover:border-emerald-400/45 transition"
+               href="https://github.com/cathaxor" target="_blank" rel="noreferrer">
+              <p class="text-emerald-200 font-semibold">GitHub</p>
+              <p class="text-xs text-slate-200/70 mt-1">github.com/cathaxor</p>
+            </a>
+
+            <a class="rounded-xl border border-emerald-400/15 p-4 bg-slate-950/40 hover:border-emerald-400/45 transition"
+               href="https://www.facebook.com/profile.php?id=61584068717312" target="_blank" rel="noreferrer">
+              <p class="text-emerald-200 font-semibold">Facebook</p>
+              <p class="text-xs text-slate-200/70 mt-1">Profile</p>
+            </a>
+
+            <div class="rounded-xl border border-emerald-400/15 p-4 bg-slate-950/40">
+              <p class="text-emerald-200 font-semibold">Email</p>
+              <p class="text-xs text-slate-200/70 mt-1">Add later (optional)</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
+          <p class="text-sm text-slate-200/75">Identity</p>
+          <div class="mt-4 space-y-3 text-sm">
+            <div class="flex items-center justify-between border border-slate-400/10 rounded-xl p-3">
+              <span class="text-slate-200/70">Handle</span>
+              <span class="text-emerald-200">CatHaxor</span>
+            </div>
+            <div class="flex items-center justify-between border border-slate-400/10 rounded-xl p-3">
+              <span class="text-slate-200/70">Name</span>
+              <span class="text-emerald-200">Abdulla Rahaman</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <footer class="mt-14 pb-10 text-center text-xs text-slate-200/50 reveal">
+      <p>© <span id="year"></span> CatHaxor — Abdulla Rahaman • Built with HTML + Tailwind</p>
+    </footer>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const lines = [
+      "Automation Engineer",
+      "Bot Developer (Node.js / Python)",
+      "Bug Hunter (Responsible Disclosure)",
+      "Ethical Web Pentester (Authorized Scope)",
+      "Deployments & Performance"
+    ];
+    const typed = document.getElementById("typed");
+    let i = 0, j = 0, del = false;
+
+    function typeLoop(){
+      const s = lines[i];
+      if (!del) {
+        j++;
+        typed.textContent = s.slice(0, j);
+        if (j >= s.length + 12) del = true;
+      } else {
+        j--;
+        typed.textContent = s.slice(0, j);
+        if (j <= 0) { del = false; i = (i + 1) % lines.length; }
+      }
+      setTimeout(typeLoop, del ? 32 : 52);
+    }
+    typeLoop();
+
+    const reveals = document.querySelectorAll(".reveal");
+    const ro = new IntersectionObserver((entries) => {
+      entries.forEach(e => e.isIntersecting && e.target.classList.add("show"));
+    }, { threshold: 0.12 });
+    reveals.forEach(el => ro.observe(el));
+
+    const navlinks = document.querySelectorAll(".navlink");
+    const sectionIds = ["projects","network","skills","contact"];
+    const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+
+    const so = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        navlinks.forEach(a => a.classList.remove("active"));
+        const id = e.target.id;
+        const active = document.querySelector(`.navlink[href="#${id}"]`);
+        if (active) active.classList.add("active");
+      });
+    }, { threshold: 0.35 });
+    sections.forEach(sec => so.observe(sec));
+
+    const menuBtn = document.getElementById("menuBtn");
+    const drawer = document.getElementById("drawer");
+    const backdrop = document.getElementById("backdrop");
+    const closeDrawer = document.getElementById("closeDrawer");
+    const iconOpen = document.getElementById("iconOpen");
+    const iconClose = document.getElementById("iconClose");
+    const moblinks = document.querySelectorAll(".moblink");
+
+    function openMenu(){
+      drawer.classList.add("open");
+      backdrop.classList.remove("hidden");
+      iconOpen.classList.add("hidden");
+      iconClose.classList.remove("hidden");
+      menuBtn.setAttribute("aria-expanded","true");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeMenu(){
+      drawer.classList.remove("open");
+      backdrop.classList.add("hidden");
+      iconOpen.classList.remove("hidden");
+      iconClose.classList.add("hidden");
+      menuBtn.setAttribute("aria-expanded","false");
+      document.body.style.overflow = "";
+    }
+
+    menuBtn.addEventListener("click", () => {
+      drawer.classList.contains("open") ? closeMenu() : openMenu();
+    });
+    closeDrawer.addEventListener("click", closeMenu);
+    backdrop.addEventListener("click", closeMenu);
+    moblinks.forEach(a => a.addEventListener("click", closeMenu));
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && drawer.classList.contains("open")) closeMenu();
+    });
+
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    function resize(){
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener("resize", () => { resize(); initDrops(); });
+
+    const letters = "アイウエオカキクケコサシスセソタチツテトナニヌネノCAT HAXOR 01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const fontSize = 16;
+    let drops = [];
+
+    function initDrops(){
+      const cols = Math.floor(window.innerWidth / fontSize);
+      drops = new Array(cols).fill(1);
+    }
+    initDrops();
+
+    function draw(){
+      ctx.fillStyle = "rgba(2, 6, 23, 0.16)";
+      ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+      ctx.font = fontSize + "px monospace";
+      ctx.fillStyle = "rgba(34,197,94,0.55)";
+
+      for (let x = 0; x < drops.length; x++) {
+        const ch = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(ch, x * fontSize, drops[x] * fontSize);
+
+        if (drops[x] * fontSize > window.innerHeight && Math.random() > 0.985) drops[x] = 0;
+        drops[x] += 0.85;
+      }
+    }
+    setInterval(draw, 40);
+  </script>
+</body>
+</html>
