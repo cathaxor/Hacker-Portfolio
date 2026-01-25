@@ -33,9 +33,10 @@
       width:100%;
       height:100%;
       z-index:-20;
-      opacity:.24;
+      opacity:.34;
       pointer-events:none;
-      filter: blur(.2px) saturate(.9);
+      mix-blend-mode: screen;
+      filter: contrast(1.08) saturate(1.15);
     }
 
     .bg-overlay{
@@ -135,7 +136,7 @@
     }
 
     @media (max-width: 640px){
-      #matrix{opacity:.16; filter:none}
+      #matrix{opacity:.28; filter: contrast(1.06) saturate(1.12)}
       .scanlines::before{opacity:.14}
       .noise::after{opacity:.06}
     }
@@ -375,7 +376,6 @@
     <section id="projects" class="mt-10 sm:mt-12">
       <div class="flex items-end justify-between gap-4 reveal">
         <h2 class="text-xl sm:text-2xl font-bold text-emerald-200">Projects</h2>
-        <p class="text-xs text-slate-200/60">Selected work + demos</p>
       </div>
 
       <div class="mt-5 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -715,10 +715,14 @@
       ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
       ctx.font = fontSize + "px monospace";
-      ctx.fillStyle = "rgba(34,197,94,0.55)";
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "rgba(34,197,94,0.35)";
 
       for (let x = 0; x < drops.length; x++) {
         const ch = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillStyle = (x % 3 === 0)
+          ? "rgba(56,189,248,0.75)"
+          : "rgba(34,197,94,0.78)";
         ctx.fillText(ch, x * fontSize, drops[x] * fontSize);
 
         if (drops[x] * fontSize > window.innerHeight && Math.random() > 0.985) drops[x] = 0;
