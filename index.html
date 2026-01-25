@@ -25,6 +25,7 @@
 
   <style>
     html{scroll-behavior:smooth}
+    *{-webkit-tap-highlight-color: transparent}
 
     #matrix{
       position:fixed;
@@ -132,15 +133,28 @@
     .drawer.open{
       transform: translateX(0);
     }
+
+    @media (max-width: 640px){
+      #matrix{opacity:.16; filter:none}
+      .scanlines::before{opacity:.14}
+      .noise::after{opacity:.06}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      html{scroll-behavior:auto}
+      .reveal{opacity:1; transform:none; transition:none}
+      .caret{animation:none}
+      .drawer{transition:none}
+    }
   </style>
 </head>
 
-<body class="font-mono bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden">
+<body class="font-mono antialiased bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden">
   <canvas id="matrix" aria-hidden="true"></canvas>
   <div class="bg-overlay" aria-hidden="true"></div>
 
   <header class="sticky top-0 z-30 border-b border-emerald-400/15 backdrop-blur bg-slate-950/55">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
       <a href="#" class="flex items-center gap-3 min-w-0">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
         <span class="text-sm text-emerald-200/90 truncate">cat@cathaxor:~</span>
@@ -206,7 +220,7 @@
     </div>
   </aside>
 
-  <main class="max-w-6xl mx-auto px-4 py-10 relative">
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10 relative">
     <div class="absolute inset-0 -z-10 scanlines noise"></div>
 
     <section class="grid lg:grid-cols-12 gap-6 items-start">
@@ -295,7 +309,7 @@
             </div>
           </div>
 
-          <div class="mt-5 grid grid-cols-2 gap-3 text-sm">
+          <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40">
               <p class="text-slate-200/60 text-xs">Availability</p>
               <p class="mt-1 text-emerald-200">Open to work</p>
@@ -358,7 +372,7 @@
       </aside>
     </section>
 
-    <section id="projects" class="mt-12">
+    <section id="projects" class="mt-10 sm:mt-12">
       <div class="flex items-end justify-between gap-4 reveal">
         <h2 class="text-xl sm:text-2xl font-bold text-emerald-200">Projects</h2>
         <p class="text-xs text-slate-200/60">Selected work + demos</p>
@@ -408,7 +422,7 @@
       <div class="mt-6 grid md:grid-cols-2 xl:grid-cols-4 gap-4">
         <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
            href="https://youtu.be/D5pZTEKdHbI?si=1UphklAXoVPP-gtx" target="_blank" rel="noreferrer">
-          <img class="w-full h-40 object-cover" src="https://img.youtube.com/vi/D5pZTEKdHbI/hqdefault.jpg" alt="YouTube demo thumbnail">
+          <img class="w-full h-36 sm:h-40 object-cover" src="https://img.youtube.com/vi/D5pZTEKdHbI/hqdefault.jpg" alt="YouTube demo thumbnail">
           <div class="p-4">
             <p class="text-emerald-200 font-semibold text-sm">Demo Project #1</p>
             <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
@@ -417,7 +431,7 @@
 
         <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
            href="https://youtu.be/yvjKhKT5XRs?si=HxjK0UY_jsulB2lr" target="_blank" rel="noreferrer">
-          <img class="w-full h-40 object-cover" src="https://img.youtube.com/vi/yvjKhKT5XRs/hqdefault.jpg" alt="YouTube demo thumbnail">
+          <img class="w-full h-36 sm:h-40 object-cover" src="https://img.youtube.com/vi/yvjKhKT5XRs/hqdefault.jpg" alt="YouTube demo thumbnail">
           <div class="p-4">
             <p class="text-emerald-200 font-semibold text-sm">Demo Project #2</p>
             <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
@@ -426,7 +440,7 @@
 
         <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
            href="https://youtu.be/SK0QTHpKCa0?si=ZDqTbItXAfwMT520" target="_blank" rel="noreferrer">
-          <img class="w-full h-40 object-cover" src="https://img.youtube.com/vi/SK0QTHpKCa0/hqdefault.jpg" alt="YouTube demo thumbnail">
+          <img class="w-full h-36 sm:h-40 object-cover" src="https://img.youtube.com/vi/SK0QTHpKCa0/hqdefault.jpg" alt="YouTube demo thumbnail">
           <div class="p-4">
             <p class="text-emerald-200 font-semibold text-sm">Demo Project #3</p>
             <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
@@ -435,7 +449,7 @@
 
         <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
            href="https://youtu.be/aXOw2snq3z8?si=CmuGocDAKKw0dEvM" target="_blank" rel="noreferrer">
-          <img class="w-full h-40 object-cover" src="https://img.youtube.com/vi/aXOw2snq3z8/hqdefault.jpg" alt="YouTube demo thumbnail">
+          <img class="w-full h-36 sm:h-40 object-cover" src="https://img.youtube.com/vi/aXOw2snq3z8/hqdefault.jpg" alt="YouTube demo thumbnail">
           <div class="p-4">
             <p class="text-emerald-200 font-semibold text-sm">Demo Project #4</p>
             <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
@@ -444,7 +458,7 @@
       </div>
     </section>
 
-    <section id="network" class="mt-12">
+    <section id="network" class="mt-10 sm:mt-12">
       <div class="flex items-end justify-between gap-4 reveal">
         <h2 class="text-xl sm:text-2xl font-bold text-emerald-200">Network</h2>
         <p class="text-xs text-slate-200/60">Websites & API</p>
@@ -489,7 +503,7 @@
       </div>
     </section>
 
-    <section id="skills" class="mt-12">
+    <section id="skills" class="mt-10 sm:mt-12">
       <h2 class="text-xl sm:text-2xl font-bold text-emerald-200 reveal">Skills</h2>
 
       <div class="mt-5 grid md:grid-cols-2 gap-4">
@@ -519,7 +533,7 @@
       </p>
     </section>
 
-    <section id="contact" class="mt-12">
+    <section id="contact" class="mt-10 sm:mt-12">
       <h2 class="text-xl sm:text-2xl font-bold text-emerald-200 reveal">Contact</h2>
 
       <div class="mt-5 grid lg:grid-cols-12 gap-4">
@@ -571,13 +585,15 @@
       </div>
     </section>
 
-    <footer class="mt-14 pb-10 text-center text-xs text-slate-200/50 reveal">
+    <footer class="mt-12 sm:mt-14 pb-10 text-center text-xs text-slate-200/50 reveal">
       <p>© <span id="year"></span> CatHaxor — Abdulla Rahaman</p>
     </footer>
   </main>
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    const reduceMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
     const lines = [
       "Automation Engineer",
@@ -602,13 +618,21 @@
       }
       setTimeout(typeLoop, del ? 32 : 52);
     }
-    typeLoop();
+    if (reduceMotion) {
+      typed.textContent = lines[0];
+    } else {
+      typeLoop();
+    }
 
     const reveals = document.querySelectorAll(".reveal");
-    const ro = new IntersectionObserver((entries) => {
-      entries.forEach(e => e.isIntersecting && e.target.classList.add("show"));
-    }, { threshold: 0.12 });
-    reveals.forEach(el => ro.observe(el));
+    if (reduceMotion) {
+      reveals.forEach(el => el.classList.add("show"));
+    } else {
+      const ro = new IntersectionObserver((entries) => {
+        entries.forEach(e => e.isIntersecting && e.target.classList.add("show"));
+      }, { threshold: 0.12 });
+      reveals.forEach(el => ro.observe(el));
+    }
 
     const navlinks = document.querySelectorAll(".navlink");
     const sectionIds = ["projects","network","skills","contact"];
@@ -701,7 +725,39 @@
         drops[x] += 0.85;
       }
     }
-    setInterval(draw, 40);
+    let matrixAnimId = null;
+    let matrixRunning = false;
+    let lastTs = 0;
+
+    function matrixLoop(ts){
+      if (!matrixRunning) return;
+      if (!lastTs) lastTs = ts;
+      if (ts - lastTs >= 40) {
+        draw();
+        lastTs = ts;
+      }
+      matrixAnimId = requestAnimationFrame(matrixLoop);
+    }
+
+    function startMatrix(){
+      if (reduceMotion || matrixRunning) return;
+      matrixRunning = true;
+      matrixAnimId = requestAnimationFrame(matrixLoop);
+    }
+
+    function stopMatrix(){
+      if (!matrixRunning) return;
+      matrixRunning = false;
+      if (matrixAnimId) cancelAnimationFrame(matrixAnimId);
+      matrixAnimId = null;
+      lastTs = 0;
+    }
+
+    startMatrix();
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stopMatrix();
+      else startMatrix();
+    });
   </script>
 </body>
 </html>
