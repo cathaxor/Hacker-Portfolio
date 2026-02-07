@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CatHaxor — Abdulla Rahaman</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CatHaxor // Abdulla Rahaman</title>
 
-  <meta name="description" content="CatHaxor (Abdulla Rahaman) — hacker-style portfolio. Automation, bots, bug hunting, and clean web engineering." />
+  <meta name="description" content="CatHaxor (Abdulla Rahaman) — Offensive Security, Automation Engineering, and Digital Architecture." />
   <meta property="og:title" content="CatHaxor — Abdulla Rahaman" />
-  <meta property="og:description" content="Automation • Bots • Bug Hunting • Ethical Web Security" />
+  <meta property="og:description" content="Automation • Reverse Engineering • Web Security • Infrastructure" />
   <meta property="og:type" content="website" />
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,7 +16,16 @@
       theme: {
         extend: {
           fontFamily: {
-            mono: ['ui-monospace','SFMono-Regular','Menlo','Monaco','Consolas','Liberation Mono','Courier New','monospace']
+            mono: ['SFMono-Regular','Menlo','Monaco','Consolas','Liberation Mono','Courier New','monospace'],
+            sans: ['Inter','system-ui','sans-serif']
+          },
+          colors: {
+            cyber: {
+              DEFAULT: '#10b981',
+              dim: 'rgba(16, 185, 129, 0.10)',
+              glow: 'rgba(16, 185, 129, 0.55)',
+              dark: '#020617'
+            }
           }
         }
       }
@@ -24,744 +33,590 @@
   </script>
 
   <style>
-    html{scroll-behavior:smooth}
-    *{-webkit-tap-highlight-color: transparent}
+    html { scroll-behavior: smooth; }
+    * { -webkit-tap-highlight-color: transparent; }
+    :root{
+      --bg:#020617;
+      --em:#10b981;
+      --em2:#34d399;
+      --glass: rgba(2, 6, 23, 0.68);
+      --b: rgba(16,185,129,.15);
+      --bh: rgba(16,185,129,.42);
+      --ease: cubic-bezier(.2,.9,.2,1);
+    }
 
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--em); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--em2); }
+    ::selection { background: rgba(16,185,129,.28); color:#fff; }
+
+    /* Matrix Canvas (lighter) */
     #matrix{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      z-index:-20;
-      opacity:.34;
-      pointer-events:none;
-      mix-blend-mode: screen;
-      filter: contrast(1.08) saturate(1.15);
+      position: fixed; inset:0; width:100%; height:100%;
+      z-index:-40; opacity:.20; pointer-events:none;
+      filter: contrast(1.1) brightness(.9);
+      transform: translateZ(0);
     }
 
-    .bg-overlay{
-      position:fixed;
-      inset:0;
-      z-index:-10;
-      pointer-events:none;
-      background:
-        radial-gradient(900px 900px at 50% -10%, rgba(16,185,129,.22), transparent 60%),
-        linear-gradient(to bottom, rgba(2,6,23,.45), rgba(2,6,23,.88), rgba(2,6,23,.96));
+    /* Background grid */
+    .bg-grid{
+      position: fixed; inset:0; z-index:-30; pointer-events:none;
+      background-image:
+        linear-gradient(rgba(16,185,129,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16,185,129,.03) 1px, transparent 1px);
+      background-size: 30px 30px;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+      opacity:.9;
     }
 
-    .scanlines::before{
-      content:"";
-      position:absolute; inset:0;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.03),
-        rgba(255,255,255,0.03) 1px,
-        rgba(0,0,0,0) 3px,
-        rgba(0,0,0,0) 6px
-      );
-      mix-blend-mode: overlay;
-      pointer-events:none;
-      opacity:.20;
+    /* Glass card (lighter hover) */
+    .glass-panel{
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--b);
+      box-shadow: 0 10px 40px rgba(0,0,0,.42), 0 0 0 1px rgba(255,255,255,.02) inset;
+      transition: transform .28s var(--ease), border-color .28s var(--ease), box-shadow .28s var(--ease);
+      will-change: transform;
+    }
+    .glass-panel:hover{
+      border-color: var(--bh);
+      box-shadow: 0 14px 52px rgba(0,0,0,.52), 0 0 18px rgba(16,185,129,.12);
+      transform: translate3d(0,-2px,0);
     }
 
-    .noise::after{
-      content:"";
-      position:absolute; inset:-40px;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
-      opacity:.08;
-      pointer-events:none;
-    }
-
-    .caret{
-      display:inline-block;
-      width:10px; height:18px;
-      background: rgba(34,197,94,.95);
-      margin-left:6px;
-      animation: blink 1s steps(2, start) infinite;
-      vertical-align:-3px;
-    }
-    @keyframes blink { to { visibility: hidden; } }
-
-    .glitch {
-      position: relative;
-      display: inline-block;
-      text-shadow: 0 0 18px rgba(34,197,94,.20);
-    }
-    .glitch::before,
-    .glitch::after{
+    /* Glitch (slower + softer) */
+    .glitch-text{ position:relative; display:inline-block; }
+    .glitch-text::before,.glitch-text::after{
       content: attr(data-text);
-      position:absolute;
-      left:0; top:0;
-      opacity:.35;
-      pointer-events:none;
+      position:absolute; top:0; left:0; width:100%; height:100%;
+      opacity:.35; mix-blend-mode: screen; pointer-events:none;
     }
-    .glitch::before{
-      transform: translate(1px, 0);
-      color: rgba(34,197,94,.75);
-      clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
-    }
-    .glitch::after{
-      transform: translate(-1px, 0);
-      color: rgba(96,165,250,.65);
-      clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
-    }
+    .glitch-text::before{ color:#00ffff; transform: translate3d(-1px,0,0); animation: g1 5.2s infinite linear alternate-reverse; }
+    .glitch-text::after{  color:#ff00ff; transform: translate3d( 1px,0,0); animation: g2 6.0s infinite linear alternate-reverse; }
+    @keyframes g1 { 0%{clip-path: inset(24% 0 76% 0);} 40%{clip-path: inset(62% 0 16% 0);} 100%{clip-path: inset(12% 0 54% 0);} }
+    @keyframes g2 { 0%{clip-path: inset(10% 0 62% 0);} 40%{clip-path: inset(78% 0  8% 0);} 100%{clip-path: inset(40% 0 22% 0);} }
 
-    .neon {
-      box-shadow: 0 0 0 1px rgba(16,185,129,.14), 0 18px 70px rgba(0,0,0,.45);
-    }
-
+    /* Reveal (shorter + less movement) */
     .reveal{
       opacity:0;
-      transform: translateY(14px);
-      transition: opacity .7s ease, transform .7s ease;
-      will-change: opacity, transform;
+      transform: translate3d(0,12px,0);
+      transition: opacity .55s var(--ease), transform .55s var(--ease);
+      will-change: transform, opacity;
     }
-    .reveal.show{
-      opacity:1;
-      transform: translateY(0);
+    .reveal.active{ opacity:1; transform: translate3d(0,0,0); }
+
+    /* Active nav */
+    .nav-item.active{
+      color: var(--em2);
+      text-shadow: 0 0 10px rgba(52,211,153,.25);
     }
 
-    .navlink.active{
-      color: rgba(167,243,208,1) !important;
-      text-shadow: 0 0 18px rgba(34,197,94,.25);
-    }
-
-    /* Mobile drawer */
-    .drawer{
-      transform: translateX(100%);
-      transition: transform .25s ease;
-    }
-    .drawer.open{
-      transform: translateX(0);
-    }
-
-    @media (max-width: 640px){
-      #matrix{opacity:.28; filter: contrast(1.06) saturate(1.12)}
-      .scanlines::before{opacity:.14}
-      .noise::after{opacity:.06}
-    }
-
+    /* Reduce motion */
     @media (prefers-reduced-motion: reduce){
-      html{scroll-behavior:auto}
-      .reveal{opacity:1; transform:none; transition:none}
-      .caret{animation:none}
-      .drawer{transition:none}
+      .reveal{ transition:none !important; opacity:1 !important; transform:none !important; }
+      .glitch-text::before,.glitch-text::after{ animation:none !important; }
+      #matrix{ display:none !important; }
     }
   </style>
 </head>
 
-<body class="font-mono antialiased bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden">
-  <canvas id="matrix" aria-hidden="true"></canvas>
-  <div class="bg-overlay" aria-hidden="true"></div>
+<body class="font-mono bg-slate-950 text-slate-200 antialiased overflow-x-hidden selection:bg-emerald-500/30">
 
-  <header class="sticky top-0 z-30 border-b border-emerald-400/15 backdrop-blur bg-slate-950/55">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-      <a href="#" class="flex items-center gap-3 min-w-0">
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-        <span class="text-sm text-emerald-200/90 truncate">cat@cathaxor:~</span>
+  <canvas id="matrix"></canvas>
+  <div class="bg-grid"></div>
+
+  <!-- NAV -->
+  <header class="fixed top-0 w-full z-50 border-b border-emerald-500/10 bg-slate-950/80 backdrop-blur-md transition-all duration-300" id="navbar">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="relative w-3 h-3">
+          <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+        </div>
+        <span class="text-sm font-bold tracking-wider text-emerald-100/90 group-hover:text-emerald-400 transition-colors">
+          root@cathaxor:~
+        </span>
       </a>
 
-      <nav class="hidden sm:flex gap-6 text-sm text-slate-200/80">
-        <a class="navlink hover:text-emerald-300" href="#projects">Projects</a>
-        <a class="navlink hover:text-emerald-300" href="#network">Network</a>
-        <a class="navlink hover:text-emerald-300" href="#skills">Skills</a>
-        <a class="navlink hover:text-emerald-300" href="#contact">Contact</a>
+      <nav class="hidden md:flex gap-8 text-xs font-semibold tracking-widest uppercase text-slate-400">
+        <a href="#operations" class="nav-item hover:text-emerald-400 transition-all duration-300">Operations</a>
+        <a href="#network" class="nav-item hover:text-emerald-400 transition-all duration-300">Network Nodes</a>
+        <a href="#arsenal" class="nav-item hover:text-emerald-400 transition-all duration-300">Arsenal</a>
+        <a href="#uplink" class="nav-item hover:text-emerald-400 transition-all duration-300">Uplink</a>
       </nav>
 
-      <div class="flex items-center gap-2">
-        <a href="#contact" class="hidden sm:inline text-xs sm:text-sm px-3 py-1.5 rounded-lg border border-emerald-400/30 hover:border-emerald-400/70 hover:text-emerald-200 transition">
-          Reach Out
+      <div class="flex items-center gap-4">
+        <a href="#uplink" class="hidden md:flex items-center gap-2 px-4 py-1.5 rounded border border-emerald-500/30 bg-emerald-500/5 text-xs text-emerald-300 hover:bg-emerald-500/10 hover:border-emerald-500/55 transition-all">
+          <span>:: EXECUTE_CONTACT ::</span>
         </a>
 
-        <!-- Mobile hamburger -->
-        <button id="menuBtn" class="sm:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-emerald-400/25 hover:border-emerald-400/60 transition"
-          aria-label="Open menu" aria-expanded="false">
-          <svg id="iconOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-5 h-5">
-            <path d="M4 6h16M4 12h16M4 18h16" stroke="rgba(167,243,208,0.95)" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <svg id="iconClose" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-5 h-5 hidden">
-            <path d="M6 6l12 12M18 6L6 18" stroke="rgba(167,243,208,0.95)" stroke-width="2" stroke-linecap="round"/>
-          </svg>
+        <button id="menuBtn" class="md:hidden text-emerald-400 p-2 focus:outline-none" aria-label="Open menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Mobile drawer + backdrop -->
-  <div id="backdrop" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
-
-  <aside id="drawer" class="drawer fixed right-0 top-0 h-full w-[82%] max-w-xs z-50 bg-slate-950/95 border-l border-emerald-400/15 backdrop-blur p-5">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="text-sm text-emerald-200/90">menu</span>
-      </div>
-      <button id="closeDrawer" class="w-10 h-10 rounded-lg border border-emerald-400/20 hover:border-emerald-400/60 transition" aria-label="Close menu">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-5 h-5 mx-auto">
-          <path d="M6 6l12 12M18 6L6 18" stroke="rgba(167,243,208,0.95)" stroke-width="2" stroke-linecap="round"/>
-        </svg>
+  <!-- MOBILE MENU -->
+  <div id="mobileMenu" class="fixed inset-y-0 right-0 w-72 bg-slate-900/95 backdrop-blur-xl border-l border-emerald-500/20 transform translate-x-full transition-transform duration-300 ease-out z-[60] flex flex-col p-6 shadow-2xl">
+    <div class="flex justify-between items-center mb-8 border-b border-emerald-500/20 pb-4">
+      <span class="text-emerald-400 font-bold">:: SYSTEM MENU ::</span>
+      <button id="closeMenu" class="text-slate-400 hover:text-white" aria-label="Close menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
     </div>
-
-    <nav class="mt-6 space-y-2 text-sm text-slate-200/85">
-      <a class="moblink block px-4 py-3 rounded-xl border border-emerald-400/10 bg-slate-950/40 hover:border-emerald-400/45 transition" href="#projects">Projects</a>
-      <a class="moblink block px-4 py-3 rounded-xl border border-emerald-400/10 bg-slate-950/40 hover:border-emerald-400/45 transition" href="#network">Network</a>
-      <a class="moblink block px-4 py-3 rounded-xl border border-emerald-400/10 bg-slate-950/40 hover:border-emerald-400/45 transition" href="#skills">Skills</a>
-      <a class="moblink block px-4 py-3 rounded-xl border border-emerald-400/10 bg-slate-950/40 hover:border-emerald-400/45 transition" href="#contact">Contact</a>
+    <nav class="flex flex-col gap-4 text-sm font-medium">
+      <a href="#operations" class="mob-link px-4 py-3 rounded bg-white/5 border border-white/5 hover:border-emerald-500/35 text-slate-200">Operations / Projects</a>
+      <a href="#network" class="mob-link px-4 py-3 rounded bg-white/5 border border-white/5 hover:border-emerald-500/35 text-slate-200">Network Topology</a>
+      <a href="#arsenal" class="mob-link px-4 py-3 rounded bg-white/5 border border-white/5 hover:border-emerald-500/35 text-slate-200">Technical Arsenal</a>
+      <a href="#uplink" class="mob-link px-4 py-3 rounded bg-emerald-600/20 border border-emerald-500/30 text-emerald-300">Establish Connection</a>
     </nav>
+  </div>
+  <div id="overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] hidden opacity-0 transition-opacity duration-300"></div>
 
-    <div class="mt-6">
-      <a href="#contact" class="moblink inline-flex w-full items-center justify-center px-4 py-3 rounded-xl bg-emerald-500/15 border border-emerald-400/30 hover:border-emerald-400/70 hover:bg-emerald-500/20 transition">
-        Reach Out
-      </a>
-    </div>
+  <!-- MAIN -->
+  <main class="relative pt-24 pb-20 max-w-6xl mx-auto px-4">
 
-    <div class="mt-6 text-xs text-slate-200/55 leading-relaxed">
-      Ethical testing only — authorized scope and responsible disclosure.
-    </div>
-  </aside>
+    <!-- HERO -->
+    <section class="grid lg:grid-cols-12 gap-10 items-start min-h-[65vh] lg:min-h-[55vh]">
+      <div class="lg:col-span-7 flex flex-col justify-center space-y-8">
+        <div class="glass-panel p-8 rounded-2xl reveal active">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+            <span class="text-xs font-bold tracking-widest text-emerald-400/80 uppercase">Identity Verified</span>
+          </div>
 
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10 relative">
-    <div class="absolute inset-0 -z-10 scanlines noise"></div>
-
-    <section class="grid lg:grid-cols-12 gap-6 items-start">
-      <div class="lg:col-span-7 space-y-6">
-        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 sm:p-7 neon reveal">
-          <p class="text-emerald-300/90 text-sm">ACCESS GRANTED ✅</p>
-
-          <h1 class="mt-3 text-3xl sm:text-4xl font-bold tracking-tight">
-            <span class="glitch" data-text="CatHaxor">CatHaxor</span>
-            <span class="caret"></span>
+          <h1 class="text-5xl sm:text-6xl font-black text-white leading-tight tracking-tight mb-2">
+            <span class="glitch-text" data-text="CatHaxor">CatHaxor</span>
           </h1>
 
-          <p class="mt-2 text-sm text-slate-200/70">
-            Legal name: <span class="text-emerald-200 font-semibold">Abdulla Rahaman</span>
+          <div class="flex items-center gap-3 text-slate-400 text-sm mb-6 font-medium">
+            <span>alias</span>
+            <span class="h-px w-8 bg-slate-700"></span>
+            <span class="text-emerald-200">Abdulla Rahaman</span>
+          </div>
+
+          <p class="text-lg text-slate-300 leading-relaxed max-w-2xl border-l-2 border-emerald-500/30 pl-4">
+            Architecting <span class="text-white font-semibold">autonomous agents</span>, resilient automation protocols, and offensive security operations.
+            Specialized in <span class="text-emerald-400">reverse engineering</span>, bot ecosystem deployment, and securing digital perimeters.
           </p>
 
-          <p class="mt-4 text-slate-200/80 leading-relaxed">
-            I build automation systems, bots, and pragmatic web tools — engineered for stability, speed, and clean deployment.
-            I also do <span class="text-emerald-200 font-semibold">bug hunting</span> and <span class="text-emerald-200 font-semibold">ethical web penetration testing</span>
-            with permission and responsible disclosure.
-          </p>
-
-          <div class="mt-5 text-sm">
-            <span class="text-slate-200/70">Role:</span>
-            <span class="text-emerald-200 font-semibold" id="typed"></span>
+          <div class="mt-8 font-mono text-sm bg-black/40 p-4 rounded border border-emerald-500/10">
+            <span class="text-emerald-500">root@sys:~#</span>
+            <span id="typed-text" class="text-slate-200"></span>
+            <span class="animate-pulse">_</span>
           </div>
 
-          <div class="mt-6 flex flex-wrap gap-2">
-            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Node.js</span>
-            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Python</span>
-            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Automation</span>
-            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Bug Hunting</span>
-            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Web Pentesting</span>
-            <span class="px-2.5 py-1 rounded-lg border border-emerald-400/20 text-xs text-emerald-200/90">Deploy</span>
-          </div>
-
-          <div class="mt-7 flex flex-wrap gap-3">
-            <a href="#projects" class="px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-400/30 hover:border-emerald-400/70 hover:bg-emerald-500/20 transition">
-              View Projects
+          <div class="mt-8 flex flex-wrap gap-4">
+            <a href="#operations" class="px-6 py-3 rounded-lg bg-emerald-600/10 border border-emerald-500/40 text-emerald-300 font-bold text-sm tracking-wide hover:bg-emerald-600/20 transition-all duration-300 group">
+              VIEW_OPERATIONS <span class="group-hover:translate-x-1 inline-block transition-transform">-></span>
             </a>
-            <a href="#network" class="px-4 py-2 rounded-xl border border-slate-400/20 hover:border-emerald-400/60 hover:text-emerald-200 transition">
-              My Network
+            <a href="https://github.com/cathaxor" target="_blank" class="px-6 py-3 rounded-lg border border-slate-700 text-slate-300 font-bold text-sm tracking-wide hover:border-emerald-500/30 hover:text-white bg-slate-900/50 transition-all duration-300">
+              GITHUB_REPO
             </a>
-          </div>
-        </div>
-
-        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden neon reveal">
-          <div class="px-4 py-2 border-b border-emerald-400/10 flex items-center gap-2 text-xs text-slate-200/70">
-            <span class="w-2 h-2 rounded-full bg-red-500/70"></span>
-            <span class="w-2 h-2 rounded-full bg-yellow-500/70"></span>
-            <span class="w-2 h-2 rounded-full bg-green-500/70"></span>
-            <span class="ml-2">terminal</span>
-          </div>
-          <div class="p-4 text-sm leading-relaxed">
-            <p class="text-slate-200/80"><span class="text-emerald-300">cat@cathaxor</span>:<span class="text-emerald-200">~</span>$ whoami</p>
-            <p class="text-slate-200/80 mt-1">CatHaxor — Abdulla Rahaman</p>
-
-            <p class="text-slate-200/80 mt-3"><span class="text-emerald-300">cat@cathaxor</span>:<span class="text-emerald-200">~</span>$ focus</p>
-            <p class="text-slate-200/80 mt-1">automation • bots • bug hunting • ethical web security</p>
-
-            <p class="text-slate-200/80 mt-3"><span class="text-emerald-300">cat@cathaxor</span>:<span class="text-emerald-200">~</span>$ status</p>
-            <p class="text-emerald-200 mt-1">online ✅</p>
           </div>
         </div>
       </div>
 
-      <aside class="lg:col-span-5 space-y-6">
-        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
-          <div class="flex items-center gap-4">
-            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border border-emerald-400/25 bg-emerald-500/10 shrink-0">
-  <img
-    src="assets/me.png"
-    alt="Abdulla Rahaman"
-    class="w-full h-full object-cover"
-    style="
-      image-rendering: auto;
-      transform: translateZ(0);
-      filter: contrast(1.08) saturate(1.08) brightness(1.03) sharpen(0);
-    "
-  />
-</div>
-
-            <div class="min-w-0">
-              <p class="text-emerald-200 font-semibold truncate">CatHaxor</p>
-              <p class="text-xs text-slate-200/70 truncate">Abdulla Rahaman • Bangladesh • GMT+6</p>
-            </div>
+      <div class="lg:col-span-5 space-y-6 reveal">
+        <div class="glass-panel p-6 rounded-2xl flex items-center gap-6 relative overflow-hidden group">
+          <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-30 transition-opacity">
+            <svg class="w-20 h-20 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>
           </div>
-
-          <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <div class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40">
-              <p class="text-slate-200/60 text-xs">Availability</p>
-              <p class="mt-1 text-emerald-200">Open to work</p>
-            </div>
-            <div class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40">
-              <p class="text-slate-200/60 text-xs">Specialty</p>
-              <p class="mt-1 text-emerald-200">Security + Automation</p>
-            </div>
+          <div class="w-20 h-20 rounded-xl overflow-hidden border-2 border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.16)] shrink-0 z-10">
+            <img src="assets/abdulla.jpg" alt="Profile" class="w-full h-full object-cover">
           </div>
-
-          <div class="mt-5 flex flex-wrap gap-2">
-            <a class="text-xs px-3 py-1.5 rounded-lg border border-emerald-400/20 hover:border-emerald-400/70 hover:text-emerald-200 transition"
-              href="https://github.com/cathaxor" target="_blank" rel="noreferrer">GitHub</a>
-            <a class="text-xs px-3 py-1.5 rounded-lg border border-emerald-400/20 hover:border-emerald-400/70 hover:text-emerald-200 transition"
-              href="https://www.youtube.com/@AbdullaTech49" target="_blank" rel="noreferrer">YouTube</a>
-            <a class="text-xs px-3 py-1.5 rounded-lg border border-emerald-400/20 hover:border-emerald-400/70 hover:text-emerald-200 transition"
-              href="https://www.facebook.com/profile.php?id=61584068717312" target="_blank" rel="noreferrer">Facebook</a>
+          <div class="z-10">
+            <h3 class="text-xl font-bold text-white">CatHaxor</h3>
+            <p class="text-xs text-emerald-400 mt-1 uppercase tracking-widest">System Administrator</p>
+            <div class="flex items-center gap-2 mt-2 text-[10px] text-slate-400 border px-2 py-1 rounded border-slate-700 bg-slate-900">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+              Online • GMT+6
+            </div>
           </div>
         </div>
 
-        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
-          <h2 class="text-sm text-emerald-200/90">Quick Links</h2>
-          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <a class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40 hover:border-emerald-400/40 transition"
-               href="https://cathaxor.xyz/" target="_blank" rel="noreferrer">
-              <p class="text-emerald-200 font-semibold">cathaxor.xyz</p>
-              <p class="text-xs text-slate-200/60 mt-1">Main website</p>
-            </a>
-            <a class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40 hover:border-emerald-400/40 transition"
-               href="https://cathaxor.site/" target="_blank" rel="noreferrer">
-              <p class="text-emerald-200 font-semibold">cathaxor.site</p>
-              <p class="text-xs text-slate-200/60 mt-1">Secondary domain</p>
-            </a>
-            <a class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40 hover:border-emerald-400/40 transition"
-               href="https://blog.cathaxor.xyz/" target="_blank" rel="noreferrer">
-              <p class="text-emerald-200 font-semibold">blog.cathaxor.xyz</p>
-              <p class="text-xs text-slate-200/60 mt-1">Blog</p>
-            </a>
-            <a class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40 hover:border-emerald-400/40 transition"
-               href="https://download.cathaxor.xyz/" target="_blank" rel="noreferrer">
-              <p class="text-emerald-200 font-semibold">download.cathaxor.xyz</p>
-              <p class="text-xs text-slate-200/60 mt-1">Downloader tool</p>
-            </a>
-            <a class="rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40 hover:border-emerald-400/40 transition sm:col-span-2"
-               href="https://prplexitycat.vercel.app/" target="_blank" rel="noreferrer">
-              <p class="text-emerald-200 font-semibold">prplexitycat.vercel.app</p>
-              <p class="text-xs text-slate-200/60 mt-1">AI UI</p>
-            </a>
+        <div class="glass-panel rounded-2xl overflow-hidden text-xs">
+          <div class="bg-slate-900/80 px-4 py-2 border-b border-emerald-500/10 flex items-center justify-between">
+            <span class="text-slate-400">terminal.exe</span>
+            <div class="flex gap-1.5">
+              <div class="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
+            </div>
           </div>
-
-          <div class="mt-4 rounded-xl border border-emerald-400/10 p-3 bg-slate-950/40">
-            <p class="text-xs text-slate-200/60">API Endpoint</p>
-            <p class="text-emerald-200 text-sm mt-1 break-all">https://perplexitycat.up.railway.app/</p>
+          <div class="p-5 font-mono space-y-3">
+            <div>
+              <p class="text-slate-500">$ whoami</p>
+              <p class="text-emerald-300">Abdulla Rahaman (Automation Engineer)</p>
+            </div>
+            <div>
+              <p class="text-slate-500">$ cat /etc/mission</p>
+              <p class="text-slate-300">"Constructing resilient systems and ethical deconstruction of insecure protocols."</p>
+            </div>
+            <div>
+              <p class="text-slate-500">$ check_status</p>
+              <p class="text-blue-400">[INFO] Available for contract work.</p>
+              <p class="text-blue-400">[INFO] Bug Bounty Scope: Active.</p>
+            </div>
           </div>
-
-          <p class="mt-4 text-xs text-slate-200/55">
-            Ethical testing only — authorized scope and responsible disclosure.
-          </p>
         </div>
-      </aside>
+      </div>
     </section>
 
-    <section id="projects" class="mt-10 sm:mt-12">
-      <div class="flex items-end justify-between gap-4 reveal">
-        <h2 class="text-xl sm:text-2xl font-bold text-emerald-200">Projects</h2>
+    <!-- OPERATIONS -->
+    <section id="operations" class="mt-12 scroll-mt-24">
+      <div class="flex items-center justify-between mb-8 reveal">
+        <div>
+          <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+            <span class="text-emerald-500">./</span> Operations
+          </h2>
+          <p class="text-slate-400 text-sm mt-1">Deployed Infrastructure & Experimental Builds</p>
+        </div>
+        <div class="hidden sm:block h-px flex-1 bg-gradient-to-r from-emerald-500/50 to-transparent ml-6"></div>
       </div>
 
-      <div class="mt-5 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-        <article class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal">
-          <div class="flex items-center justify-between gap-2">
-            <p class="text-emerald-200 font-semibold">Param Finder</p>
-            <span class="text-[11px] px-2 py-1 rounded-lg border border-emerald-400/20 text-emerald-200/80">GitHub</span>
+      <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <article class="glass-panel p-6 rounded-xl relative group reveal">
+          <div class="flex justify-between items-start mb-4">
+            <div class="p-2 rounded bg-emerald-500/10 text-emerald-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">PYTHON</span>
           </div>
-          <p class="mt-2 text-sm text-slate-200/75">
-            URL parameter utility for faster workflow and analysis.
+          <h3 class="text-xl font-bold text-white group-hover:text-emerald-300 transition-colors">Param Finder</h3>
+          <p class="text-slate-400 text-sm mt-3 leading-relaxed">
+            Advanced URL parameter extraction utility tailored for bug hunters.
           </p>
-          <div class="mt-4 flex gap-3 text-sm">
-            <a class="text-emerald-300 hover:text-emerald-200" href="https://github.com/cathaxor/param-finder.git" target="_blank" rel="noreferrer">View Repo</a>
+          <div class="mt-6 border-t border-white/5 pt-4">
+            <a href="https://github.com/cathaxor/param-finder.git" target="_blank" class="flex items-center gap-2 text-sm text-emerald-400 hover:text-emerald-200 font-medium">
+              <span>Access Repository</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+            </a>
           </div>
         </article>
 
-        <article class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal">
-          <div class="flex items-center justify-between gap-2">
-            <p class="text-emerald-200 font-semibold">CYBER-CAT Bot Ecosystem</p>
-            <span class="text-[11px] px-2 py-1 rounded-lg border border-emerald-400/20 text-emerald-200/80">Node.js</span>
+        <article class="glass-panel p-6 rounded-xl relative group reveal">
+          <div class="flex justify-between items-start mb-4">
+            <div class="p-2 rounded bg-blue-500/10 text-blue-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">NODE.JS</span>
           </div>
-          <p class="mt-2 text-sm text-slate-200/75">
-            Modular command system with stable logging, configuration layers, and deployment-ready structure.
+          <h3 class="text-xl font-bold text-white group-hover:text-blue-300 transition-colors">Cyber-Cat Bot Eco</h3>
+          <p class="text-slate-400 text-sm mt-3 leading-relaxed">
+            Modular autonomous agent framework with rapid deployment.
           </p>
-          <div class="mt-4 flex gap-3 text-sm">
-            <a class="text-emerald-300 hover:text-emerald-200" href="https://github.com/cathaxor" target="_blank" rel="noreferrer">GitHub Profile</a>
+          <div class="mt-6 border-t border-white/5 pt-4">
+            <a href="https://github.com/cathaxor" target="_blank" class="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-200 font-medium">
+              <span>View Architecture</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+            </a>
           </div>
         </article>
 
-        <article class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal">
-          <div class="flex items-center justify-between gap-2">
-            <p class="text-emerald-200 font-semibold">Automation + Downloader Tools</p>
-            <span class="text-[11px] px-2 py-1 rounded-lg border border-emerald-400/20 text-emerald-200/80">Web</span>
+        <article class="glass-panel p-6 rounded-xl relative group reveal">
+          <div class="flex justify-between items-start mb-4">
+            <div class="p-2 rounded bg-purple-500/10 text-purple-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">WEB APP</span>
           </div>
-          <p class="mt-2 text-sm text-slate-200/75">
-            Practical utilities and hosted tools for productivity and automation workflows.
+          <h3 class="text-xl font-bold text-white group-hover:text-purple-300 transition-colors">Auto-Downloader</h3>
+          <p class="text-slate-400 text-sm mt-3 leading-relaxed">
+            Low-latency web utility for media extraction.
           </p>
-          <div class="mt-4 flex gap-3 text-sm">
-            <a class="text-emerald-300 hover:text-emerald-200" href="https://download.cathaxor.xyz/" target="_blank" rel="noreferrer">Open Tool</a>
+          <div class="mt-6 border-t border-white/5 pt-4">
+            <a href="https://download.cathaxor.xyz/" target="_blank" class="flex items-center gap-2 text-sm text-purple-400 hover:text-purple-200 font-medium">
+              <span>Launch Tool</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            </a>
           </div>
         </article>
       </div>
 
-      <div class="mt-6 grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
-           href="https://youtu.be/D5pZTEKdHbI?si=1UphklAXoVPP-gtx" target="_blank" rel="noreferrer">
-          <img class="w-full h-36 sm:h-40 object-cover" src="https://img.youtube.com/vi/D5pZTEKdHbI/hqdefault.jpg" alt="YouTube demo thumbnail">
-          <div class="p-4">
-            <p class="text-emerald-200 font-semibold text-sm">Demo Project #1</p>
-            <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
+      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="https://youtu.be/D5pZTEKdHbI" target="_blank" class="group relative block overflow-hidden rounded-xl border border-emerald-500/20 reveal">
+          <img src="https://img.youtube.com/vi/D5pZTEKdHbI/hqdefault.jpg" alt="Demo" class="w-full h-32 object-cover transition duration-500 group-hover:scale-105 opacity-70 group-hover:opacity-100">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex items-end p-3">
+            <span class="text-xs font-bold text-white flex items-center gap-1">
+              <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              WiFi Jammer Build
+            </span>
           </div>
         </a>
-
-        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
-           href="https://youtu.be/yvjKhKT5XRs?si=HxjK0UY_jsulB2lr" target="_blank" rel="noreferrer">
-          <img class="w-full h-36 sm:h-40 object-cover" src="https://img.youtube.com/vi/yvjKhKT5XRs/hqdefault.jpg" alt="YouTube demo thumbnail">
-          <div class="p-4">
-            <p class="text-emerald-200 font-semibold text-sm">Demo Project #2</p>
-            <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
+        <a href="https://youtu.be/yvjKhKT5XRs" target="_blank" class="group relative block overflow-hidden rounded-xl border border-emerald-500/20 reveal">
+          <img src="https://img.youtube.com/vi/yvjKhKT5XRs/hqdefault.jpg" alt="Demo" class="w-full h-32 object-cover transition duration-500 group-hover:scale-105 opacity-70 group-hover:opacity-100">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex items-end p-3">
+            <span class="text-xs font-bold text-white flex items-center gap-1">
+              <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              Config Optimization
+            </span>
           </div>
         </a>
-
-        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
-           href="https://youtu.be/SK0QTHpKCa0?si=ZDqTbItXAfwMT520" target="_blank" rel="noreferrer">
-          <img class="w-full h-36 sm:h-40 object-cover" src="https://img.youtube.com/vi/SK0QTHpKCa0/hqdefault.jpg" alt="YouTube demo thumbnail">
-          <div class="p-4">
-            <p class="text-emerald-200 font-semibold text-sm">Demo Project #3</p>
-            <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
+        <a href="https://youtu.be/SK0QTHpKCa0" target="_blank" class="group relative block overflow-hidden rounded-xl border border-emerald-500/20 reveal">
+          <img src="https://img.youtube.com/vi/SK0QTHpKCa0/hqdefault.jpg" alt="Demo" class="w-full h-32 object-cover transition duration-500 group-hover:scale-105 opacity-70 group-hover:opacity-100">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex items-end p-3">
+            <span class="text-xs font-bold text-white flex items-center gap-1">
+              <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              Bot Logic Demo
+            </span>
           </div>
         </a>
-
-        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 overflow-hidden hover:border-emerald-400/40 transition neon reveal"
-           href="https://youtu.be/aXOw2snq3z8?si=CmuGocDAKKw0dEvM" target="_blank" rel="noreferrer">
-          <img class="w-full h-36 sm:h-40 object-cover" src="https://img.youtube.com/vi/aXOw2snq3z8/hqdefault.jpg" alt="YouTube demo thumbnail">
-          <div class="p-4">
-            <p class="text-emerald-200 font-semibold text-sm">Demo Project #4</p>
-            <p class="text-xs text-slate-200/65 mt-1">Watch on YouTube</p>
+        <a href="https://youtu.be/aXOw2snq3z8" target="_blank" class="group relative block overflow-hidden rounded-xl border border-emerald-500/20 reveal">
+          <img src="https://img.youtube.com/vi/aXOw2snq3z8/hqdefault.jpg" alt="Demo" class="w-full h-32 object-cover transition duration-500 group-hover:scale-105 opacity-70 group-hover:opacity-100">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex items-end p-3">
+            <span class="text-xs font-bold text-white flex items-center gap-1">
+              <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              System Part 2
+            </span>
           </div>
         </a>
       </div>
     </section>
 
-    <section id="network" class="mt-10 sm:mt-12">
-      <div class="flex items-end justify-between gap-4 reveal">
-        <h2 class="text-xl sm:text-2xl font-bold text-emerald-200">Network</h2>
-        <p class="text-xs text-slate-200/60">Websites & API</p>
+    <!-- NETWORK -->
+    <section id="network" class="mt-24 scroll-mt-24">
+      <div class="flex items-center justify-between mb-8 reveal">
+        <div>
+          <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+            <span class="text-emerald-500">::</span> Network Nodes
+          </h2>
+          <p class="text-slate-400 text-sm mt-1">Digital Footprint & Endpoints</p>
+        </div>
+        <div class="hidden sm:block h-px flex-1 bg-gradient-to-r from-emerald-500/50 to-transparent ml-6"></div>
       </div>
 
-      <div class="mt-5 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal"
-           href="https://cathaxor.xyz/" target="_blank" rel="noreferrer">
-          <p class="text-emerald-200 font-semibold">cathaxor.xyz</p>
-          <p class="mt-2 text-sm text-slate-200/70">Main website • identity hub</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a href="https://cathaxor.dev/" target="_blank" class="glass-panel p-5 rounded-lg flex items-center justify-between group hover:bg-emerald-900/10 transition reveal">
+          <div>
+            <h4 class="font-bold text-emerald-200">cathaxor.dev</h4>
+            <p class="text-xs text-slate-500 font-mono mt-1">PRIMARY_IDENTITY_HUB</p>
+          </div>
+          <span class="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">>>></span>
         </a>
 
-        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal"
-           href="https://blog.cathaxor.xyz/" target="_blank" rel="noreferrer">
-          <p class="text-emerald-200 font-semibold">blog.cathaxor.xyz</p>
-          <p class="mt-2 text-sm text-slate-200/70">Blog • notes • writeups</p>
+        <a href="https://cathaxor.site/" target="_blank" class="glass-panel p-5 rounded-lg flex items-center justify-between group hover:bg-emerald-900/10 transition reveal">
+          <div>
+            <h4 class="font-bold text-emerald-200">cathaxor.site</h4>
+            <p class="text-xs text-slate-500 font-mono mt-1">ALT_PUBLIC_PORTAL</p>
+          </div>
+          <span class="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">>>></span>
         </a>
 
-        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal"
-           href="https://download.cathaxor.xyz/" target="_blank" rel="noreferrer">
-          <p class="text-emerald-200 font-semibold">download.cathaxor.xyz</p>
-          <p class="mt-2 text-sm text-slate-200/70">Downloader tool</p>
-        </a>
-
-        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal"
-           href="https://cathaxor.site/" target="_blank" rel="noreferrer">
-          <p class="text-emerald-200 font-semibold">cathaxor.site</p>
-          <p class="mt-2 text-sm text-slate-200/70">Secondary domain</p>
-        </a>
-
-        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal md:col-span-2 xl:col-span-2"
-           href="https://prplexitycat.vercel.app/" target="_blank" rel="noreferrer">
-          <p class="text-emerald-200 font-semibold">prplexitycat.vercel.app</p>
-          <p class="mt-2 text-sm text-slate-200/70">AI UI</p>
-        </a>
-
-        <a class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-5 hover:border-emerald-400/40 transition neon reveal xl:col-span-3"
-           href="https://perplexitycat.up.railway.app/" target="_blank" rel="noreferrer">
-          <p class="text-emerald-200 font-semibold">perplexitycat.up.railway.app</p>
-          <p class="mt-2 text-sm text-slate-200/70 break-all">API endpoint</p>
+        <a href="https://prplexitycat.vercel.app/" target="_blank" class="glass-panel p-5 rounded-lg flex items-center justify-between group hover:bg-emerald-900/10 transition reveal">
+          <div>
+            <h4 class="font-bold text-emerald-200">prplexitycat.vercel.app</h4>
+            <p class="text-xs text-slate-500 font-mono mt-1">AI_INTERFACE_UI</p>
+          </div>
+          <span class="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">>>></span>
         </a>
       </div>
     </section>
 
-    <section id="skills" class="mt-10 sm:mt-12">
-      <h2 class="text-xl sm:text-2xl font-bold text-emerald-200 reveal">Skills</h2>
+    <!-- ARSENAL -->
+    <section id="arsenal" class="mt-24 scroll-mt-24">
+      <h2 class="text-3xl font-bold text-white mb-8 reveal border-l-4 border-emerald-500 pl-4">Technical Arsenal</h2>
 
-      <div class="mt-5 grid md:grid-cols-2 gap-4">
-        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
-          <p class="text-emerald-200 font-semibold">Engineering</p>
-          <ul class="mt-3 space-y-2 text-sm text-slate-200/75">
-            <li>• Node.js, Express, RESTful APIs</li>
-            <li>• Python automation & scripting</li>
-            <li>• Linux operations, Nginx, Cloudflare</li>
-            <li>• cPanel and VPS deployment workflows</li>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="glass-panel p-6 rounded-xl reveal">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-2 bg-blue-500/10 rounded text-blue-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white">Engineering & Architecture</h3>
+          </div>
+          <ul class="space-y-3 text-slate-400 text-sm">
+            <li class="flex items-start gap-2"><span class="text-emerald-500">▹</span> <span><strong>Backend:</strong> Node.js, Express, Custom APIs.</span></li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500">▹</span> <span><strong>Automation:</strong> Python scripting, Cron, Headless workflows.</span></li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500">▹</span> <span><strong>Infra:</strong> Linux, Nginx, Cloudflare.</span></li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500">▹</span> <span><strong>Deploy:</strong> VPS, Docker, cPanel.</span></li>
           </ul>
         </div>
 
-        <div class="rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
-          <p class="text-emerald-200 font-semibold">Security (ethical)</p>
-          <ul class="mt-3 space-y-2 text-sm text-slate-200/75">
-            <li>• Bug hunting (responsible disclosure)</li>
-            <li>• Web penetration testing (authorized scope)</li>
-            <li>• Secrets hygiene (.env, token safety)</li>
-            <li>• Monitoring, logging, stability-first decisions</li>
+        <div class="glass-panel p-6 rounded-xl reveal">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-2 bg-red-500/10 rounded text-red-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white">Offensive Security</h3>
+          </div>
+          <ul class="space-y-3 text-slate-400 text-sm">
+            <li class="flex items-start gap-2"><span class="text-red-500">▹</span> <span><strong>Assessment:</strong> Authorized bug hunting.</span></li>
+            <li class="flex items-start gap-2"><span class="text-red-500">▹</span> <span><strong>Web:</strong> IDOR, XSS, Injection vectors.</span></li>
+            <li class="flex items-start gap-2"><span class="text-red-500">▹</span> <span><strong>OPSEC:</strong> secrets hygiene, rate limits.</span></li>
+            <li class="flex items-start gap-2"><span class="text-red-500">▹</span> <span><strong>Ethics:</strong> Responsible Disclosure.</span></li>
           </ul>
         </div>
       </div>
-
-      <p class="mt-3 text-xs text-slate-200/55 reveal">
-        Ethical testing only — systems I own or have explicit permission to assess.
-      </p>
     </section>
 
-    <section id="contact" class="mt-10 sm:mt-12">
-      <h2 class="text-xl sm:text-2xl font-bold text-emerald-200 reveal">Contact</h2>
+    <!-- UPLINK -->
+    <section id="uplink" class="mt-24 mb-10 scroll-mt-24">
+      <div class="glass-panel p-8 rounded-2xl reveal text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-emerald-900/20 pointer-events-none"></div>
 
-      <div class="mt-5 grid lg:grid-cols-12 gap-4">
-        <div class="lg:col-span-7 rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
-          <p class="text-sm text-slate-200/80">
-            Fastest way to reach me is through my channels below.
-          </p>
+        <h2 class="text-3xl font-black text-white tracking-tight relative z-10">Establish Uplink</h2>
+        <p class="text-slate-400 mt-2 max-w-lg mx-auto relative z-10">
+          Initiate communication protocol. Priority given to security contracts and automation inquiries.
+        </p>
 
-          <div class="mt-5 grid sm:grid-cols-2 gap-3">
-            <a class="rounded-xl border border-emerald-400/15 p-4 bg-slate-950/40 hover:border-emerald-400/45 transition"
-               href="https://www.youtube.com/@AbdullaTech49" target="_blank" rel="noreferrer">
-              <p class="text-emerald-200 font-semibold">YouTube</p>
-              <p class="text-xs text-slate-200/70 mt-1">@AbdullaTech49</p>
-            </a>
-
-            <a class="rounded-xl border border-emerald-400/15 p-4 bg-slate-950/40 hover:border-emerald-400/45 transition"
-               href="https://github.com/cathaxor" target="_blank" rel="noreferrer">
-              <p class="text-emerald-200 font-semibold">GitHub</p>
-              <p class="text-xs text-slate-200/70 mt-1">github.com/cathaxor</p>
-            </a>
-
-            <a class="rounded-xl border border-emerald-400/15 p-4 bg-slate-950/40 hover:border-emerald-400/45 transition"
-               href="https://www.facebook.com/profile.php?id=61584068717312" target="_blank" rel="noreferrer">
-              <p class="text-emerald-200 font-semibold">Facebook</p>
-              <p class="text-xs text-slate-200/70 mt-1">Profile</p>
-            </a>
-
-            <div class="rounded-xl border border-emerald-400/15 p-4 bg-slate-950/40">
-              <p class="text-emerald-200 font-semibold">Email</p>
-              <p class="text-xs text-slate-200/70 mt-1">Add later (optional)</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="lg:col-span-5 rounded-2xl border border-emerald-400/15 bg-slate-950/55 p-6 neon reveal">
-          <p class="text-sm text-slate-200/75">Identity</p>
-          <div class="mt-4 space-y-3 text-sm">
-            <div class="flex items-center justify-between border border-slate-400/10 rounded-xl p-3">
-              <span class="text-slate-200/70">Handle</span>
-              <span class="text-emerald-200">CatHaxor</span>
-            </div>
-            <div class="flex items-center justify-between border border-slate-400/10 rounded-xl p-3">
-              <span class="text-slate-200/70">Name</span>
-              <span class="text-emerald-200">Abdulla Rahaman</span>
-            </div>
-          </div>
-
+        <div class="mt-8 flex flex-wrap justify-center gap-4 relative z-10">
+          <a href="https://www.youtube.com/@AbdullaTech49" target="_blank" class="flex items-center gap-2 px-6 py-3 rounded-lg bg-red-600/10 border border-red-500/30 text-red-300 hover:bg-red-600/20 transition duration-300">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+            <span>YouTube Feed</span>
+          </a>
+          <a href="https://github.com/cathaxor" target="_blank" class="flex items-center gap-2 px-6 py-3 rounded-lg bg-slate-100/10 border border-slate-500/30 text-white hover:bg-slate-100/20 transition duration-300">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            <span>GitHub</span>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61584068717312" target="_blank" class="flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600/10 border border-blue-500/30 text-blue-300 hover:bg-blue-600/20 transition duration-300">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            <span>Facebook</span>
+          </a>
         </div>
       </div>
     </section>
 
-    <footer class="mt-12 sm:mt-14 pb-10 text-center text-xs text-slate-200/50 reveal">
-      <p>© <span id="year"></span> CatHaxor — Abdulla Rahaman</p>
+    <footer class="mt-16 text-center text-[10px] text-slate-600 pb-10 font-mono tracking-widest uppercase">
+      <p>System Build v3.5 // <span id="year"></span></p>
+      <p class="mt-2 text-slate-700">CatHaxor — Abdulla Rahaman</p>
     </footer>
   </main>
 
   <script>
+    // Year
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    const reduceMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    // Typing (same, smooth)
+    const phrases = ["Automation Engineer","Offensive Security Specialist","Full-Stack Bot Developer","Network Architect"];
+    const typedEl = document.getElementById("typed-text");
+    let phraseIndex = 0, charIndex = 0, isDeleting = false;
+    const typeSpeed = 46, deleteSpeed = 28, pauseTime = 1200;
 
-    const lines = [
-      "Automation Engineer",
-      "Bot Developer (Node.js / Python)",
-      "Bug Hunter (Responsible Disclosure)",
-      "Ethical Web Pentester (Authorized Scope)",
-      "Deployments & Performance"
-    ];
-    const typed = document.getElementById("typed");
-    let i = 0, j = 0, del = false;
+    function typeWriter() {
+      const current = phrases[phraseIndex];
+      typedEl.textContent = isDeleting ? current.substring(0, charIndex - 1) : current.substring(0, charIndex + 1);
+      charIndex += isDeleting ? -1 : 1;
 
-    function typeLoop(){
-      const s = lines[i];
-      if (!del) {
-        j++;
-        typed.textContent = s.slice(0, j);
-        if (j >= s.length + 12) del = true;
-      } else {
-        j--;
-        typed.textContent = s.slice(0, j);
-        if (j <= 0) { del = false; i = (i + 1) % lines.length; }
-      }
-      setTimeout(typeLoop, del ? 32 : 52);
+      let delta = isDeleting ? deleteSpeed : typeSpeed;
+      if (!isDeleting && charIndex === current.length) { delta = pauseTime; isDeleting = true; }
+      else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; delta = 420; }
+      setTimeout(typeWriter, delta);
     }
-    if (reduceMotion) {
-      typed.textContent = lines[0];
-    } else {
-      typeLoop();
-    }
+    typeWriter();
 
-    const reveals = document.querySelectorAll(".reveal");
-    if (reduceMotion) {
-      reveals.forEach(el => el.classList.add("show"));
-    } else {
-      const ro = new IntersectionObserver((entries) => {
-        entries.forEach(e => e.isIntersecting && e.target.classList.add("show"));
-      }, { threshold: 0.12 });
-      reveals.forEach(el => ro.observe(el));
-    }
+    // Reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+    }, { threshold: 0.12, rootMargin: "0px 0px -10% 0px" });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    const navlinks = document.querySelectorAll(".navlink");
-    const sectionIds = ["projects","network","skills","contact"];
-    const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
-
-    const so = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        navlinks.forEach(a => a.classList.remove("active"));
-        const id = e.target.id;
-        const active = document.querySelector(`.navlink[href="#${id}"]`);
-        if (active) active.classList.add("active");
+    // Active nav spy
+    const navLinks = Array.from(document.querySelectorAll('.nav-item'));
+    const sections = navLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = '#' + entry.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
       });
     }, { threshold: 0.35 });
-    sections.forEach(sec => so.observe(sec));
+    sections.forEach(s => spy.observe(s));
 
-    const menuBtn = document.getElementById("menuBtn");
-    const drawer = document.getElementById("drawer");
-    const backdrop = document.getElementById("backdrop");
-    const closeDrawer = document.getElementById("closeDrawer");
-    const iconOpen = document.getElementById("iconOpen");
-    const iconClose = document.getElementById("iconClose");
-    const moblinks = document.querySelectorAll(".moblink");
+    // Mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const closeMenu = document.getElementById('closeMenu');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('overlay');
+    const links = document.querySelectorAll('.mob-link');
 
-    function openMenu(){
-      drawer.classList.add("open");
-      backdrop.classList.remove("hidden");
-      iconOpen.classList.add("hidden");
-      iconClose.classList.remove("hidden");
-      menuBtn.setAttribute("aria-expanded","true");
-      document.body.style.overflow = "hidden";
+    function openMenu() {
+      mobileMenu.classList.remove('translate-x-full');
+      overlay.classList.remove('hidden');
+      setTimeout(() => overlay.classList.add('opacity-100'), 10);
+      document.body.style.overflow = 'hidden';
     }
-
-    function closeMenu(){
-      drawer.classList.remove("open");
-      backdrop.classList.add("hidden");
-      iconOpen.classList.remove("hidden");
-      iconClose.classList.add("hidden");
-      menuBtn.setAttribute("aria-expanded","false");
-      document.body.style.overflow = "";
+    function closeMenuFn() {
+      mobileMenu.classList.add('translate-x-full');
+      overlay.classList.remove('opacity-100');
+      setTimeout(() => overlay.classList.add('hidden'), 220);
+      document.body.style.overflow = 'auto';
     }
-
-    menuBtn.addEventListener("click", () => {
-      drawer.classList.contains("open") ? closeMenu() : openMenu();
-    });
-    closeDrawer.addEventListener("click", closeMenu);
-    backdrop.addEventListener("click", closeMenu);
-    moblinks.forEach(a => a.addEventListener("click", closeMenu));
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && drawer.classList.contains("open")) closeMenu();
-    });
-
-    const canvas = document.getElementById("matrix");
-    const ctx = canvas.getContext("2d");
-
-    function resize(){
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = "100%";
-      canvas.style.height = "100%";
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    function toggleMenu() {
+      const isOpen = !mobileMenu.classList.contains('translate-x-full');
+      isOpen ? closeMenuFn() : openMenu();
     }
-    resize();
-    window.addEventListener("resize", () => { resize(); initDrops(); });
+    menuBtn.addEventListener('click', toggleMenu);
+    closeMenu.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenuFn);
+    links.forEach(l => l.addEventListener('click', closeMenuFn));
 
-    const letters = "アイウエオカキクケコサシスセソタチツテトナニヌネノCAT HAXOR 01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const fontSize = 16;
-    let drops = [];
+    // Navbar scroll
+    addEventListener('scroll', () => {
+      const nav = document.getElementById('navbar');
+      if (scrollY > 50) nav.classList.add('shadow-lg', 'bg-slate-950/95');
+      else nav.classList.remove('shadow-lg', 'bg-slate-950/95');
+    }, { passive: true });
 
-    function initDrops(){
-      const cols = Math.floor(window.innerWidth / fontSize);
-      drops = new Array(cols).fill(1);
+    // Matrix (throttled FPS + lower density)
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d', { alpha: true });
+
+    function resizeCanvas() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    addEventListener('resize', resizeCanvas, { passive: true });
+    resizeCanvas();
+
+    const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソタチツテトナニヌネノ';
+    const fontSize = 16; // bigger => fewer columns => lighter
+    let columns = 0, drops = [];
+    function initMatrix() {
+      columns = Math.floor(canvas.width / fontSize);
+      drops = new Array(columns).fill(1);
     }
-    initDrops();
+    initMatrix();
+    addEventListener('resize', initMatrix, { passive: true });
 
-    function draw(){
-      ctx.fillStyle = "rgba(2, 6, 23, 0.16)";
-      ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    const cores = navigator.hardwareConcurrency || 4;
+    const mem = navigator.deviceMemory || 4;
+    const lowPower = (cores <= 4) || (mem <= 4);
 
-      ctx.font = fontSize + "px monospace";
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = "rgba(34,197,94,0.35)";
+    const targetFPS = lowPower ? 18 : 24;
+    const frameInterval = 1000 / targetFPS;
+    let last = 0;
 
-      for (let x = 0; x < drops.length; x++) {
-        const ch = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillStyle = (x % 3 === 0)
-          ? "rgba(56,189,248,0.75)"
-          : "rgba(34,197,94,0.78)";
-        ctx.fillText(ch, x * fontSize, drops[x] * fontSize);
+    function drawMatrix(t) {
+      if (t - last < frameInterval) return requestAnimationFrame(drawMatrix);
+      last = t;
 
-        if (drops[x] * fontSize > window.innerHeight && Math.random() > 0.985) drops[x] = 0;
-        drops[x] += 0.85;
+      ctx.fillStyle = 'rgba(2, 6, 23, 0.16)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.font = fontSize + 'px monospace';
+      ctx.fillStyle = '#059669';
+
+      const step = 2; // skip columns => lighter
+      for (let i = 0; i < drops.length; i += step) {
+        const text = chars.charAt((Math.random() * chars.length) | 0);
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+
+        if (Math.random() > 0.992) {
+          ctx.fillStyle = '#34d399';
+          ctx.fillText(text, x, y);
+          ctx.fillStyle = '#059669';
+        } else {
+          ctx.fillText(text, x, y);
+        }
+
+        if (y > canvas.height && Math.random() > 0.985) drops[i] = 0;
+        drops[i]++;
       }
+      requestAnimationFrame(drawMatrix);
     }
-    let matrixAnimId = null;
-    let matrixRunning = false;
-    let lastTs = 0;
-
-    function matrixLoop(ts){
-      if (!matrixRunning) return;
-      if (!lastTs) lastTs = ts;
-      if (ts - lastTs >= 40) {
-        draw();
-        lastTs = ts;
-      }
-      matrixAnimId = requestAnimationFrame(matrixLoop);
-    }
-
-    function startMatrix(){
-      if (reduceMotion || matrixRunning) return;
-      matrixRunning = true;
-      matrixAnimId = requestAnimationFrame(matrixLoop);
-    }
-
-    function stopMatrix(){
-      if (!matrixRunning) return;
-      matrixRunning = false;
-      if (matrixAnimId) cancelAnimationFrame(matrixAnimId);
-      matrixAnimId = null;
-      lastTs = 0;
-    }
-
-    startMatrix();
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) stopMatrix();
-      else startMatrix();
-    });
+    requestAnimationFrame(drawMatrix);
   </script>
 </body>
 </html>
